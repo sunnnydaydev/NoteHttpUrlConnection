@@ -4,6 +4,7 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import kotlinx.android.synthetic.main.activity_main.*
 import java.io.BufferedReader
+import java.io.DataOutputStream
 import java.io.InputStreamReader
 import java.lang.StringBuilder
 import java.net.HttpURLConnection
@@ -27,6 +28,9 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    /**
+     * 以get方式访问百度，获取请求返回的String。
+     * */
     private fun sendRequest2Sever() {
         // 子线程中访问网络。
         thread {
@@ -42,6 +46,7 @@ class MainActivity : AppCompatActivity() {
                 connection.requestMethod = GET
                 // 获取inputStream
                 val ins = connection.inputStream
+                // 以字符流方式处理数据（若网络返回的数据为文件我们可以以字节流处理）
                 val sb = StringBuilder()
                 val reader = BufferedReader(InputStreamReader(ins))
                 reader.use {
@@ -62,5 +67,18 @@ class MainActivity : AppCompatActivity() {
         runOnUiThread {
             tvText.text = str
         }
+    }
+
+    /**
+     * Post 请求上传key-value。
+     * ps：
+     * 1、注意每对key-value之间使用&分隔。
+     * 2、这里简单举个例子，如需要很多键值对上传，这里方法可以定个map
+     * 参数，然后遍历拼接。
+     */
+    private fun postTest(connect:HttpURLConnection){
+        connect.requestMethod = POST
+        val ops = DataOutputStream(connect.outputStream)
+        ops.write("userName=徐凤年&tvPlay=雪中悍刀行".toByteArray())
     }
 }
